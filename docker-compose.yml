@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  reservations:
+    container_name: reservations_service
+    build: 
+      context: .
+      dockerfile: ./apps/reservations/Dockerfile
+      target: development
+    env_file:
+      - ./apps/reservations/.env
+    command: npm run start:dev reservations
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+
+  auth:
+    container_name: auth_service
+    build: 
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    env_file:
+      - ./apps/auth/.env
+    command: npm run start:dev auth
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/usr/src/app
+
+  mongo:
+    container_name: sleepr_mongodb
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - momgodb:/var/lib/mongodb
+
+volumes:
+  momgodb:
+    driver: 
+      local

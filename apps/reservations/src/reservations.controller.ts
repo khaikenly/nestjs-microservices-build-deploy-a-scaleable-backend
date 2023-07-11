@@ -16,30 +16,30 @@ export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
   @Post()
-  create(@Body() createReservationDto: CreateReservationDto) {
+  async create(@Body() createReservationDto: CreateReservationDto) {
     return this.reservationsService.create(createReservationDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.reservationsService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.reservationsService.findOne(+id);
+    return this.reservationsService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateReservationDto: UpdateReservationDto,
   ) {
-    return this.reservationsService.update(+id, updateReservationDto);
+    return this.reservationsService.update(id, updateReservationDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.reservationsService.remove(id);
   }
 }
