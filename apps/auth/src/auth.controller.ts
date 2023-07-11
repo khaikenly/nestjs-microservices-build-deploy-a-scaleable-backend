@@ -15,7 +15,7 @@ export class AuthController {
     @CurrentUser() user: UserDocument,
     @Res({ passthrough: true }) res: Response,
   ) {
-    this.authService.login(user, res);
-    res.send(user);
+    const token = await this.authService.login(user, res);
+    res.send({ user, token });
   }
 }
