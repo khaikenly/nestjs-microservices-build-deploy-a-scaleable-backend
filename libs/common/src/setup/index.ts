@@ -2,7 +2,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import * as CookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
-import { ResourceSerialization, TimeoutInterceptor } from '../interceptor';
+import {
+  LoggingInterceptor,
+  ResourceSerialization,
+  TimeoutInterceptor,
+} from '../interceptor';
+import { AllExceptionFilter } from '../exception';
 
 const setUpApplication = (app: INestApplication) => {
   app.setGlobalPrefix('api');
@@ -19,9 +24,14 @@ const setUpApplication = (app: INestApplication) => {
 
   app.use(CookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalInterceptors(new ResourceSerialization());
-  app.useGlobalInterceptors(new TimeoutInterceptor());
-  app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(
+    new ResourceSerialization(),
+    new TimeoutInterceptor(),
+    new LoggingInterceptor(),
+  );
+
+  app.useGlobalFilters(new AllExceptionFilter());
+  // app.useLogger(app.get(Logger));
 
   const configService = app.get(ConfigService);
 

@@ -29,6 +29,20 @@ services:
     volumes:
       - .:/usr/src/app
 
+  payments:
+    container_name: payments_service
+    build: 
+      context: .
+      dockerfile: ./apps/payments/Dockerfile
+      target: development
+    env_file:
+      - ./apps/payments/.env
+    command: npm run start:dev payments
+    ports:
+      - "3003:3003"
+    volumes:
+      - .:/usr/src/app
+
   mongo:
     container_name: sleepr_mongodb
     image: mongo
@@ -41,3 +55,7 @@ volumes:
   momgodb:
     driver: 
       local
+
+networks:
+ kong-net:
+  driver: bridge

@@ -9,9 +9,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const { port, logInfo } = setUpApplication(app);
 
-  await app.listen(port);
-  logInfo();
-
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
@@ -20,6 +17,9 @@ async function bootstrap() {
     },
   });
 
+  await app.listen(port);
   await app.startAllMicroservices();
+
+  logInfo();
 }
 bootstrap();

@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  kong-database:
+    image: postgres:9.6
+    container_name: kong_database
+    ports:
+      - 1000:5432
+    environment:
+      - POSTGRES_USER=kong
+      - POSTGRES_DB=kong
+      - POSTGRES_PASSWORD=kong
+    restart: on-failure
+
+  kong-migrations:
+    image: kong:latest
+    container_name: kong_migrations
+    command: kong migrations bootstrap
+    depends_on:
+      - kong-database
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: kong
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    restart: on-failure
+  
+  kong:
+    image: kong:latest
+    container_name: kong
+    environment:
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=kong-database
+      - KONG_PG_PASSWORD=kong
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
+    depends_on:
+      - kong-database
+    ports:
+      - 8000:8000
+      - 8443:8443
+      - 8001:8001
+      - 8444:8444
+    restart: on-failure
+
+  konga-prepare:
+    container_name: konga_prepare
+    image: pantsel/konga:latest
+    command: "-c prepare -a postgres -u postgresql://kong:kong@kong-database:5432/konga_db"
+    restart: on-failure
+    depends_on:
+      - kong-database
+
+  konga:
+    image: pantsel/konga:latest
+    container_name: konga
+    depends_on:
+      - kong-database
+    environment:
+      - TOKEN_SECRET=pgkiWSoM9XrMXYqxR36tru0kQ2VYbI9Sa3LBbauD7lyHGt87ldeHOfEX0cru9I6K
+      - DB_ADAPTER=postgres
+      - DB_HOST=kong-database
+      - DB_PORT=5432
+      - DB_USER=kong
+      - DB_PASSWORD=kong
+      - DB_DATABASE=konga_db
+      - NODE_ENV=production
+    ports:
+      - 1337:1337
+

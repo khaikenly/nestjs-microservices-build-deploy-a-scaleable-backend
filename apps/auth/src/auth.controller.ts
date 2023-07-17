@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UserDocument } from './users/models/user.schema';
 import { Response } from 'express';
@@ -25,6 +25,11 @@ export class AuthController {
     };
 
     return data;
+  }
+
+  @Get('fetch')
+  async fetchApi() {
+    return await this.authService.fetchExample();
   }
 
   @UseGuards(JwtAuthGuard)
