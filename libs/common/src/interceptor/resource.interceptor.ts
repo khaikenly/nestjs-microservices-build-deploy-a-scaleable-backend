@@ -4,19 +4,16 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, lastValueFrom, of } from 'rxjs';
 import { formatResource } from './utils';
 
 @Injectable()
 export class ResourceSerialization implements NestInterceptor {
-  intercept(ctx: ExecutionContext, next: CallHandler): Observable<any> {
-    return next.handle().pipe(
-      switchMap((response) => {
-        if (!response) return of(response);
-
-        return [formatResource(response)];
-      }),
-    );
+  async intercept(
+    ctx: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
+    const response = await lastValueFrom(next.handle());
+    return of(formatResource(response));
   }
 }

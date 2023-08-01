@@ -30,9 +30,10 @@ export class AllExceptionFilter implements ExceptionFilter {
         : { message: (exception as Error).message, code_error: null };
 
     const responseData = {
+      status: 'failure',
       ...{
         statusCode: status,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toLocaleString(),
         path: request.url,
       },
       ...message,

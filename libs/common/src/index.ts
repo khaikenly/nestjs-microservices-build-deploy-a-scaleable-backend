@@ -8,3 +8,4 @@ export * from './exception';
 export * from './interceptor';
 export * from './framework/cms-services/strapi';
 export * from './http';
+export * from './interfaces';

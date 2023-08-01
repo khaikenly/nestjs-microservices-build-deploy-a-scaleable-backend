@@ -24,11 +24,7 @@ const setUpApplication = (app: INestApplication) => {
 
   app.use(CookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalInterceptors(
-    new ResourceSerialization(),
-    new TimeoutInterceptor(),
-    new LoggingInterceptor(),
-  );
+  app.useGlobalInterceptors(new TimeoutInterceptor(), new LoggingInterceptor());
 
   app.useGlobalFilters(new AllExceptionFilter());
   // app.useLogger(app.get(Logger));
